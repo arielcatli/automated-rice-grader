@@ -3,7 +3,8 @@ import numpy as np
 from math import ceil
 
 def extract(sample_image_directory, sample_directory_extracted):
-    sample_image = cv2.imread(sample_image_directory, 0)
+    sample_image = cv2.imread(sample_image_directory)
+    sample_image = cv2.cvtColor(sample_image, cv2.COLOR_BGR2GRAY)
     sample_image = cv2.medianBlur(sample_image, 7)
     sample_image = cv2.threshold(sample_image, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
     canny_sample_image = cv2.Canny(sample_image[1], 128, 255)
@@ -42,20 +43,9 @@ def extract(sample_image_directory, sample_directory_extracted):
             pass
         
     
-    print("The grain count is ", grain_count)
-        
-
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-    cv2.waitKey(1)
-    cv2.waitKey(1)
-    cv2.waitKey(1)
-    cv2.waitKey(1)
-    cv2.waitKey(1)
-    cv2.waitKey(1)
-    cv2.waitKey(1)
-    cv2.waitKey(1)
-
+    print "The grain count is " + str(grain_count)
+    return grain_count
+   
 
 if __name__ == "__main__":
     extract("../img-src/29/29.jpg", "../img-src/29/extracted")

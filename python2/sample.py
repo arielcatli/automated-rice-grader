@@ -2,6 +2,7 @@ from picamera import PiCamera
 import cv2
 import os
 from extraction import extract
+import Tkinter as tk
 
 class Sample:
     def __init__(self):
@@ -14,7 +15,7 @@ class Sample:
         self.sample_directory = ""
         self.sample_directory_extracted = ""
         self.sample_image = ""
-        self.sample_image_id = ""
+        self.sample_image_id = []
         self.sample_count = ""
         
         #housekeeping
@@ -28,25 +29,37 @@ class Sample:
         else:
             print("The directory: " + self.sample_directory + " already exists.")
         self.__update_log_file()
+
+        self.__gui()
         
         #capture
         self.capture()
 
         #extraction
-        #self.__extract()
+        self.__extract()
+
+        #exit
+        os._exit
         
     def check_src_dir(self):
         if not os.path.exists(self.DIR_SAMPLE):
             os.mkdir(self.DIR_SAMPLE, 0o777)
 
+    def __gui(self):
+        self.__root= tk.Tk()
+        self.__root.title("Capture")
+        self.__root.mainloop()
+        self.__btn_capture = tk.Button(self.__root, text="EXTRACT", command=self.__extract)
+   
+         
     def capture(self):
         camera = PiCamera()
         self.sample_image_id = self.sample_directory + "/" + str(self.sample_id) + ".jpg"
         camera.capture(self.sample_image_id)
         camera.close()
         #self.extract_grains
-        #self.image = cv2.imread(
-
+        #self.image = cv2.imread(        
+        
     def __create_sample_directory(self):
         if os.path.exists(self.sample_directory):
             return False
@@ -78,7 +91,8 @@ class Sample:
             log_file.write(str(self.sample_id))
 
     def __extract(self):
-        extract(self.sample_image_id, self.sample_directory_extracted)
+        if extract(self.sample_image_id, self.sample_directory_extracted) < 100:
+            
         
 if __name__ == "__main__":
     sample = Sample()

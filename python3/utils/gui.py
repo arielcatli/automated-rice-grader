@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 import led
+import subprocess
 
 
 class GUI:
@@ -13,7 +14,7 @@ class GUI:
         self.__root.attributes("-fullscreen", True)
         
         
-        self.__btn_capture = tk.Button(self.__main_frame, text="CAPTURE", width = 50, height=3)
+        self.__btn_capture = tk.Button(self.__main_frame, text="CAPTURE", width = 50, height=3, command=self.__capture)
         self.__btn_capture.pack()
         self.__btn_view_grains = tk.Button(self.__main_frame,  text="VIEW GRAINS", width = 50, height=3, state=tk.DISABLED)
         self.__btn_view_grains.pack()
@@ -30,6 +31,9 @@ class GUI:
         
         
         self.__root.mainloop()
+
+    def __capture(self):
+        subprocess.call(["/usr/bin/python2.7", "/home/pi/automated-rice-grader/python2/sample.py"])
         
     def __led_on(self):
         self.__btn_LED_OFF.config(state=tk.NORMAL)
