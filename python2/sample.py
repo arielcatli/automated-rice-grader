@@ -6,8 +6,8 @@ from extraction import extract
 class Sample:
     def __init__(self):
         #constants
-        self.DIR_SAMPLE = "/home/pi/grader/img-src"
-        self.DIR_LOG_FILE = "/home/pi/grader/img-src/log.txt"
+        self.DIR_SAMPLE = "/home/pi/automated-rice-grader/img-src"
+        self.DIR_LOG_FILE = "/home/pi/automated-rice-grader/img-src/log.txt"
         
         #metadata
         self.sample_id = ""
