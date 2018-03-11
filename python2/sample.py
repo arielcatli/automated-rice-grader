@@ -33,7 +33,7 @@ class Sample:
         self.__gui()
         
         #capture
-        #self.capture()
+        self.capture()
 
         #extraction
         self.__extract()
@@ -50,12 +50,11 @@ class Sample:
         self.__root.title("Capture")
         self.__root.mainloop()
         self.__btn_capture = tk.Button(self.__root, text="EXTRACT", command=self.__extract)
-        #self.__entry_grain_count = tk.Entry(self.__root, 
    
          
-    def capture(self, directory, img_id):
+    def capture(self):
         camera = PiCamera()
-        self.sample_image_id = self.sample_directory + "/" + img_id + ".jpg"
+        self.sample_image_id = self.sample_directory + "/" + str(self.sample_id) + ".jpg"
         camera.capture(self.sample_image_id)
         camera.close()
         #self.extract_grains
@@ -92,8 +91,7 @@ class Sample:
             log_file.write(str(self.sample_id))
 
     def __extract(self):
-        initial_id
-            
+        if extract(self.sample_image_id, self.sample_directory_extracted) < 100:
             
         
 if __name__ == "__main__":
