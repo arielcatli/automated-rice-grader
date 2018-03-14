@@ -145,6 +145,12 @@ class Classifier:
     def classify(self, class0_dest, class1_dest):
         count = 0
         correct = 0
+        
+        TP = 0
+        TN = 0
+        FP = 0
+        FN = 0
+        
         results = self.__model.predict(self.dataset_test[0])
         count = len(results)
         for i, result in enumerate(results):
@@ -156,8 +162,19 @@ class Classifier:
             if result == self.dataset_Y_test[i]:
                 correct += 1
             
+            if result == 1 and result == self.dataset_Y_test[i]:
+                TP += 1
+            
+            if result == 0 and result == self.dataset_Y_test[i]:
+                TN += 1
+                
+            if result == 0 and self.dataset_Y_test[i] == 1:
+                FN += 1
+            
+            if result == 1 and self.dataset_Y_test[i] == 0:
+                FP += 1
         
-        return [results, self.dataset_filenames_test, [correct, count]]
+        return [results, self.dataset_filenames_test, [correct, count], [TP, TN, FP, FN]]
                 
     
     #def add_test_dataset(self): 
@@ -173,6 +190,7 @@ if __name__ == "__main__":
     bkn.build_test_dataset("../../testing/bkn/bins/", "bkn_test_dataset")
     results = bkn.classify("../../testing/bkn/results/bkn/", "../../testing/bkn/results/unbkn/")
     print(results[2][0]/results[2][1])
+    print(results[3])
     
     ylw = Classifier(False)
     ylw.add_model_dataset("../../training/ylw/data/ylw/", 1)
@@ -184,6 +202,7 @@ if __name__ == "__main__":
     ylw.build_test_dataset("../../testing/ylw/bins/", "ylw_test_dataset")
     results = ylw.classify("../../testing/ylw/results/ylw/", "../../testing/ylw/results/nylw/")
     print(results[2][0]/results[2][1])
+    print(results[3])
     
     grn = Classifier(False)
     grn.add_model_dataset("../../training/grn/data/grn/", 1)
@@ -195,6 +214,18 @@ if __name__ == "__main__":
     grn.build_test_dataset("../../testing/grn/bins/", "grn_test_dataset")
     results = grn.classify("../../testing/grn/results/grn/", "../../testing/grn/results/ngrn/")
     print(results[2][0]/results[2][1])
+    print(results[3])
 #   
+    paddy = Classifier(False)
+    paddy.add_model_dataset("../../training/paddy/data/paddy/", 1)
+    paddy.add_model_dataset("../../training/paddy/data/npaddy/", 0)
+    paddy.build_model_dataset("../../training/paddy/bins/", "paddy_dataset")
+    paddy.build_model("../../training/paddy/bins/", "model_paddy")
+    paddy.add_test_dataset("../../testing/paddy/data/paddy/", 1)
+    paddy.add_test_dataset("../../testing/paddy/data/npaddy/", 0)
+    paddy.build_test_dataset("../../testing/paddy/bins/", "paddy_test_dataset")
+    results = paddy.classify("../../testing/paddy/results/paddy/", "../../testing/paddy/results/npaddy/")
+    print(results[2][0]/results[2][1])
+    print(results[3])
     
     
