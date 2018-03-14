@@ -12,9 +12,10 @@ import os
 from sklearn.svm import SVC
 import shutil
 
+
 class Classifier:
     
-    def __init__(self):
+    def __init__(self, isHOG):
         self.dataset_X = []
         self.dataset_Y = []
         self.dataset = []
@@ -24,12 +25,13 @@ class Classifier:
         self.dataset_filenames_test = []
         self.dataset_filenames_nodir_test = []
         self.dataset_test = []
+        self.isHOG = isHOG
         
-    def add_model_dataset(self, data_folder, data_class, isHOG = True):
+    def add_model_dataset(self, data_folder, data_class):
         if os.path.exists(data_folder):
             images = os.listdir(data_folder)
             
-            if isHOG:
+            if self.isHOG:
                 HOG = cv2.HOGDescriptor()
                 for image in images:
                     file_name = data_folder + image
@@ -37,19 +39,45 @@ class Classifier:
                     image_hog = HOG.compute(image)
                     self.dataset_X.append(image_hog)
                     self.dataset_Y.append(data_class)
+                    
+            elif self.isHOG == False:
+                
+                for image in images:
+                    img_hist = np.zeros([])
+                    file_name = data_folder + image
+                    image = cv2.imread(file_name)
+                    mask_image = cv2.threshold(cv2.GaussianBlur(cv2.imread(file_name, 0), (7,7), 0),127,255, cv2.THRESH_OTSU + cv2.THRESH_BINARY)
+                    r = cv2.calcHist([image], [0], mask_image[1], [256], [0,256])
+                    r = r/max(r)
+                    g = cv2.calcHist([image], [1], mask_image[1], [256], [0,256])
+                    g = g/max(g)
+                    b = cv2.calcHist([image], [2], mask_image[1], [256], [0,256])
+                    b = b/max(b)
+                   
+                    img_hist = np.concatenate((r,g,b))
+                    
+                    self.dataset_X.append(img_hist)
+                    self.dataset_Y.append(data_class)
+            
     
     def build_model_dataset(self, model_dataset_folder, model_dataset_name):
-        self.dataset_X = np.array(self.dataset_X).reshape(-1,3780)
-        self.dataset_Y = np.array(self.dataset_Y)
+        
+        if self.isHOG:
+            self.dataset_X = np.array(self.dataset_X).reshape(-1,3780)
+            self.dataset_Y = np.array(self.dataset_Y)
+        else:
+            self.dataset_X = np.array(self.dataset_X).reshape(-1, 768)
+            self.dataset_Y = np.array(self.dataset_Y)
+            
         self.dataset = [self.dataset_X, self.dataset_Y]
         with open(model_dataset_folder+model_dataset_name+".bin", "wb") as dataset:
             pickle.dump(self.dataset, dataset)
             
-    def add_test_dataset(self, data_folder, data_class, isHOG = True):
+    def add_test_dataset(self, data_folder, data_class):
         if os.path.exists(data_folder):
             images = os.listdir(data_folder)
             
-            if isHOG:
+            if self.isHOG:
                 HOG = cv2.HOGDescriptor()
                 for image in images:
                     file_name = data_folder + image
@@ -59,15 +87,43 @@ class Classifier:
                     self.dataset_Y_test.append(data_class)
                     self.dataset_filenames_nodir_test.append(image)
                     self.dataset_filenames_test.append(file_name)
+                    
+            elif self.isHOG == False:
+                
+                for image in images:
+                    img_hist = np.zeros([])
+                    file_name = data_folder + image
+                    image_ = cv2.imread(file_name)
+                    mask_image = cv2.threshold(cv2.GaussianBlur(cv2.imread(file_name, 0), (7,7), 0),127,255, cv2.THRESH_OTSU + cv2.THRESH_BINARY)
+                    r = cv2.calcHist([image_], [0], mask_image[1], [256], [0,256])
+                    r = r/max(r)
+                    g = cv2.calcHist([image_], [1], mask_image[1], [256], [0,256])
+                    g = g/max(g)
+                    b = cv2.calcHist([image_], [2], mask_image[1], [256], [0,256])
+                    b = b/max(b)
+                   
+                    img_hist = np.concatenate((r,g,b))
+                    
+                    self.dataset_X_test.append(img_hist)
+                    self.dataset_Y_test.append(data_class)
+                    self.dataset_filenames_nodir_test.append(image)
+                    self.dataset_filenames_test.append(file_name)
+                    
     
     def build_test_dataset(self, test_dataset_folder, test_dataset_name):
-        self.dataset_X_test = np.array(self.dataset_X_test).reshape(-1,3780)
-        self.dataset_Y_test= np.array(self.dataset_Y_test)
+        if self.isHOG:
+            self.dataset_X_test = np.array(self.dataset_X_test).reshape(-1,3780)
+            self.dataset_Y_test = np.array(self.dataset_Y_test)
+        else:
+            self.dataset_X_test = np.array(self.dataset_X_test).reshape(-1, 768)
+            self.dataset_Y_test = np.array(self.dataset_Y_test)
+            
         self.dataset_test = [self.dataset_X_test, self.dataset_Y_test, self.dataset_filenames_test, self.dataset_filenames_nodir_test]
         with open(test_dataset_folder+test_dataset_name+".bin", "wb") as dataset:
             pickle.dump(self.dataset_test, dataset)
             
     def build_model(self, model_folder, model_name):
+        
         self.__model = SVC(gamma = 0.0001, C=100)
         if(len(self.dataset) != 0):
             self.__model.fit(self.dataset_X, self.dataset_Y)
@@ -93,9 +149,9 @@ class Classifier:
         count = len(results)
         for i, result in enumerate(results):
             if result == 1:
-                shutil.copy(self.dataset_filenames_test[i], class1_dest+self.dataset_filenames_nodir_test[i])
+                shutil.copy(str(self.dataset_filenames_test[i]), str(class1_dest)+str(self.dataset_filenames_nodir_test[i]))
             else:
-                shutil.copy(self.dataset_filenames_test[i], class0_dest+self.dataset_filenames_nodir_test[i])
+                shutil.copy(str(self.dataset_filenames_test[i]), str(class0_dest)+str(self.dataset_filenames_nodir_test[i]))
                 
             if result == self.dataset_Y_test[i]:
                 correct += 1
@@ -107,7 +163,7 @@ class Classifier:
     #def add_test_dataset(self): 
         
 if __name__ == "__main__":
-    bkn = Classifier()
+    bkn = Classifier(True)
     bkn.add_model_dataset("../../training/bkn/data/bkn/", 0)
     bkn.add_model_dataset("../../training/bkn/data/unbkn/", 1)
     bkn.build_model_dataset("../../training/bkn/bins/", "bkn_dataset")
@@ -115,8 +171,19 @@ if __name__ == "__main__":
     bkn.add_test_dataset("../../testing/bkn/data/bkn/", 0)
     bkn.add_test_dataset("../../testing/bkn/data/unbkn/", 1)
     bkn.build_test_dataset("../../testing/bkn/bins/", "bkn_test_dataset")
-    #print(bkn.load_dataset("../../testing/bkn/bins/bkn_test_dataset.bin"))
     results = bkn.classify("../../testing/bkn/results/bkn/", "../../testing/bkn/results/unbkn/")
+    print(results[2][0]/results[2][1])
     
-    print(results[2])
+    ylw = Classifier(False)
+    ylw.add_model_dataset("../../training/ylw/data/ylw/", 1)
+    ylw.add_model_dataset("../../training/ylw/data/nylw/", 0)
+    ylw.build_model_dataset("../../training/ylw/bins/", "ylw_dataset")
+    ylw.build_model("../../training/ylw/bins/", "model_ylw")
+    ylw.add_test_dataset("../../testing/ylw/data/ylw/", 1)
+    ylw.add_test_dataset("../../testing/ylw/data/nylw/", 0)
+    ylw.build_test_dataset("../../testing/ylw/bins/", "ylw_test_dataset")
+    results = ylw.classify("../../testing/ylw/results/ylw/", "../../testing/ylw/results/nylw/")
+    print(results[2][0]/results[2][1])
+#   
+    
     
