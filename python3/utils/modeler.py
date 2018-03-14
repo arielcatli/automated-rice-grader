@@ -184,6 +184,17 @@ if __name__ == "__main__":
     ylw.build_test_dataset("../../testing/ylw/bins/", "ylw_test_dataset")
     results = ylw.classify("../../testing/ylw/results/ylw/", "../../testing/ylw/results/nylw/")
     print(results[2][0]/results[2][1])
+    
+    grn = Classifier(False)
+    grn.add_model_dataset("../../training/grn/data/grn/", 1)
+    grn.add_model_dataset("../../training/grn/data/ngrn/", 0)
+    grn.build_model_dataset("../../training/grn/bins/", "grn_dataset")
+    grn.build_model("../../training/grn/bins/", "model_grn")
+    grn.add_test_dataset("../../testing/grn/data/grn/", 1)
+    grn.add_test_dataset("../../testing/grn/data/ngrn/", 0)
+    grn.build_test_dataset("../../testing/grn/bins/", "grn_test_dataset")
+    results = grn.classify("../../testing/grn/results/grn/", "../../testing/grn/results/ngrn/")
+    print(results[2][0]/results[2][1])
 #   
     
     
