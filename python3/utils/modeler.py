@@ -10,6 +10,7 @@ import cv2
 import pickle
 import os
 from sklearn.svm import SVC
+import shutil
 
 class Classifier:
     
@@ -21,6 +22,7 @@ class Classifier:
         self.dataset_X_test = []
         self.dataset_Y_test = []
         self.dataset_filenames_test = []
+        self.dataset_filenames_nodir_test = []
         self.dataset_test = []
         
     def add_model_dataset(self, data_folder, data_class, isHOG = True):
@@ -51,16 +53,17 @@ class Classifier:
                 HOG = cv2.HOGDescriptor()
                 for image in images:
                     file_name = data_folder + image
-                    image = cv2.imread(file_name)
-                    image_hog = HOG.compute(image)
+                    image_ = cv2.imread(file_name)
+                    image_hog = HOG.compute(image_)
                     self.dataset_X_test.append(image_hog)
                     self.dataset_Y_test.append(data_class)
+                    self.dataset_filenames_nodir_test.append(image)
                     self.dataset_filenames_test.append(file_name)
     
     def build_test_dataset(self, test_dataset_folder, test_dataset_name):
         self.dataset_X_test = np.array(self.dataset_X_test).reshape(-1,3780)
         self.dataset_Y_test= np.array(self.dataset_Y_test)
-        self.dataset_test = [self.dataset_X_test, self.dataset_Y_test]
+        self.dataset_test = [self.dataset_X_test, self.dataset_Y_test, self.dataset_filenames_test, self.dataset_filenames_nodir_test]
         with open(test_dataset_folder+test_dataset_name+".bin", "wb") as dataset:
             pickle.dump(self.dataset_test, dataset)
             
@@ -83,7 +86,22 @@ class Classifier:
     
     #def test(class1_dest, class0_dest, dataset=self.dataset_test, model=self.__model):
         
+    def classify(self, class0_dest, class1_dest):
+        count = 0
+        correct = 0
+        results = self.__model.predict(self.dataset_test[0])
+        count = len(results)
+        for i, result in enumerate(results):
+            if result == 1:
+                shutil.copy(self.dataset_filenames_test[i], class1_dest+self.dataset_filenames_nodir_test[i])
+            else:
+                shutil.copy(self.dataset_filenames_test[i], class0_dest+self.dataset_filenames_nodir_test[i])
+                
+            if result == self.dataset_Y_test[i]:
+                correct += 1
+            
         
+        return [results, self.dataset_filenames_test, [correct, count]]
                 
     
     #def add_test_dataset(self): 
@@ -97,5 +115,8 @@ if __name__ == "__main__":
     bkn.add_test_dataset("../../testing/bkn/data/bkn/", 0)
     bkn.add_test_dataset("../../testing/bkn/data/unbkn/", 1)
     bkn.build_test_dataset("../../testing/bkn/bins/", "bkn_test_dataset")
-    print(bkn.load_dataset("../../testing/bkn/bins/bkn_test_dataset.bin"))
+    #print(bkn.load_dataset("../../testing/bkn/bins/bkn_test_dataset.bin"))
+    results = bkn.classify("../../testing/bkn/results/bkn/", "../../testing/bkn/results/unbkn/")
+    
+    print(results[2])
     
