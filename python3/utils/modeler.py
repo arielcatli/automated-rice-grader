@@ -33,6 +33,7 @@ class Classifier:
         if os.path.exists(data_folder):
             images = os.listdir(data_folder)
             
+            
             if self.isHOG:
                 HOG = cv2.HOGDescriptor()
                 for image in images:
@@ -45,10 +46,15 @@ class Classifier:
             elif self.isHOG == False:
                 
                 for image in images:
+                    
                     img_hist = np.zeros([])
                     file_name = data_folder + image
+                    self.dataset_files.append(file_name)
+                    
                     image_ = cv2.imread(file_name)
-                    mask_image = cv2.threshold(cv2.GaussianBlur(cv2.imread(file_name, 0), (7,7), 0),127,255, cv2.THRESH_OTSU + cv2.THRESH_BINARY)
+                    gray = cv2.imread(file_name, 0)
+                    
+                    mask_image = cv2.threshold(cv2.GaussianBlur(gray, (7,7), 0),127,255, cv2.THRESH_OTSU + cv2.THRESH_BINARY)
                     r = cv2.calcHist([image_], [0], mask_image[1], [256], [0,256])
                     r = r/max(r)
                     g = cv2.calcHist([image_], [1], mask_image[1], [256], [0,256])
@@ -60,7 +66,9 @@ class Classifier:
                     
                  
                     self.dataset_classification.append(img_hist)
-                    
+            
+        else:
+            print("Data folder doesn't exists.")
             
         
     def add_model_dataset(self, data_folder, data_class):
@@ -95,6 +103,7 @@ class Classifier:
                     self.dataset_X.append(img_hist)
                     self.dataset_Y.append(data_class)
             
+        
     
     def build_model_dataset(self, model_dataset_folder, model_dataset_name):
         
@@ -220,13 +229,14 @@ class Classifier:
         return [results, self.dataset_filenames_test, [correct, count], [TP, TN, FP, FN]]
     
     def classify(self, class0_dir, class1_dir):
-        if self.__model != None:
+        if self.__model != type([]):
             if self.isHOG:
                 self.dataset_classification = np.array(self.dataset_classification).reshape(-1,3780)
-
-            else:
-                print("COLOR HIST")
                 
+            else:
+                self.dataset_classification = np.array(self.dataset_classification).reshape(-1, 768)
+            
+            print(len(self.dataset_classification))
             predictions = self.__model.predict(self.dataset_classification)
             print(predictions)
             
@@ -235,6 +245,10 @@ class Classifier:
                     shutil.copy(self.dataset_files[i], class1_dir)
                 else:
                     shutil.copy(self.dataset_files[i], class0_dir)
+        
+        else:
+            print("Model is not set.")
+        
             
                 
     
@@ -242,8 +256,8 @@ class Classifier:
         
 if __name__ == "__main__":
     bkn = Classifier(True)
-    bkn.add_model_dataset("../../training/bkn/data/bkn/", 0)
-    bkn.add_model_dataset("../../training/bkn/data/unbkn/", 1)
+    bkn.add_model_dataset("../../training/bkn/data/bkn/", 1)
+    bkn.add_model_dataset("../../training/bkn/data/unbkn/", 0)
     bkn.build_model_dataset("../../training/bkn/bins/", "bkn_dataset")
     bkn.build_model("../../training/bkn/bins/", "model_bkn")
     bkn.add_test_dataset("../../testing/bkn/data/bkn/", 0)
@@ -252,23 +266,28 @@ if __name__ == "__main__":
     results = bkn.test_classify("../../testing/bkn/results/bkn/", "../../testing/bkn/results/unbkn/")
     print(results[2][0]/results[2][1])
     print(results[3])
-#    
-    bkn.add_dataset("../../img-src/52/extracted/p/")
-    bkn.classify("../../img-src/52/bkn/", "../../img-src/52/nbkn")
     
-##    ylw = Classifier(False)
-##    ylw.add_model_dataset("../../training/ylw/data/ylw/", 1)
-##    ylw.add_model_dataset("../../training/ylw/data/nylw/", 0)
-##    ylw.build_model_dataset("../../training/ylw/bins/", "ylw_dataset")
-##    ylw.build_model("../../training/ylw/bins/", "model_ylw")
-##    ylw.add_test_dataset("../../testing/ylw/data/ylw/", 1)
-##    ylw.add_test_dataset("../../testing/ylw/data/nylw/", 0)
-##    ylw.build_test_dataset("../../testing/ylw/bins/", "ylw_test_dataset")
-##    results = ylw.test_classify("../../testing/ylw/results/ylw/", "../../testing/ylw/results/nylw/")
-##    print(results[2][0]/results[2][1])
-##    print(results[3])
+#    bkn.set_model("../../training/bkn/bins/model_bkn.bin")
+#    bkn.add_dataset("../../img-src/52/extracted/p/")
+#    bkn.classify("../../img-src/52/bkn/", "../../img-src/52/nbkn")
+    
+    ylw = Classifier(False)
+#    ylw.add_model_dataset("../../training/ylw/data/ylw/", 1)
+#    ylw.add_model_dataset("../../training/ylw/data/nylw/", 0)
+#    ylw.build_model_dataset("../../training/ylw/bins/", "ylw_dataset")
+#    ylw.build_model("../../training/ylw/bins/", "model_ylw")
+#    ylw.add_test_dataset("../../testing/ylw/data/ylw/", 1)
+#    ylw.add_test_dataset("../../testing/ylw/data/nylw/", 0)
+#    ylw.build_test_dataset("../../testing/ylw/bins/", "ylw_test_dataset")
+#    results = ylw.test_classify("../../testing/ylw/results/nylw/", "../../testing/ylw/results/ylw/")
+#    print(results[2][0]/results[2][1])
+#    print(results[3])
+    ylw.set_model("../../training/ylw/bins/model_ylw.bin")
+    ylw.add_dataset("../../testing/chalky/data/chalky/")
+    ylw.classify("../../testing/ylw/results/nylw/", "../../testing/ylw/results/ylw/")
+    
 ###    
-    grn = Classifier(False)
+#    grn = Classifier(False)
 ##    grn.add_model_dataset("../../training/grn/data/grn/", 1)
 ##    grn.add_model_dataset("../../training/grn/data/ngrn/", 0)
 ##    grn.build_model_dataset("../../training/grn/bins/", "grn_dataset")
@@ -280,21 +299,21 @@ if __name__ == "__main__":
 ##    print(results[2][0]/results[2][1])
 ##    print(results[3])
 #
-    grn.set_model("../../training/grn/bins/model_grn.bin")
-    grn.add_dataset("../../img-src/59/extracted/p")
-    grn.classify("../../img-src/59/ngrn/", "../../img-src/59/grn")
-##                 
-    paddy = Classifier(False)
-    paddy.add_model_dataset("../../training/paddy/data/paddy/", 1)
-    paddy.add_model_dataset("../../training/paddy/data/npaddy/", 0)
-    paddy.build_model_dataset("../../training/paddy/bins/", "paddy_dataset")
-    paddy.build_model("../../training/paddy/bins/", "model_paddy")
-    paddy.add_test_dataset("../../testing/paddy/data/paddy/", 1)
-    paddy.add_test_dataset("../../testing/paddy/data/npaddy/", 0)
-    paddy.build_test_dataset("../../testing/paddy/bins/", "paddy_test_dataset")
-    results = paddy.test_classify("../../testing/paddy/results/paddy/", "../../testing/paddy/results/npaddy/")
-    print(results[2][0]/results[2][1])
-    print(results[3])
+#    grn.set_model("../../training/grn/bins/model_grn.bin")
+#    grn.add_dataset("../../img-src/59/extracted/p/")
+#    grn.classify("../../img-src/59/ngrn/", "../../img-src/59/grn")
+###                 
+#    paddy = Classifier(False)
+#    paddy.add_model_dataset("../../training/paddy/data/paddy/", 1)
+#    paddy.add_model_dataset("../../training/paddy/data/npaddy/", 0)
+#    paddy.build_model_dataset("../../training/paddy/bins/", "paddy_dataset")
+#    paddy.build_model("../../training/paddy/bins/", "model_paddy")
+#    paddy.add_test_dataset("../../testing/paddy/data/paddy/", 1)
+#    paddy.add_test_dataset("../../testing/paddy/data/npaddy/", 0)
+#    paddy.build_test_dataset("../../testing/paddy/bins/", "paddy_test_dataset")
+#    results = paddy.test_classify("../../testing/paddy/results/paddy/", "../../testing/paddy/results/npaddy/")
+#    print(results[2][0]/results[2][1])
+#    print(results[3])
 ##
 ##    foreign = Classifier(False)
 ##    foreign.add_model_dataset("../../training/foreign/data/foreign/", 1)
