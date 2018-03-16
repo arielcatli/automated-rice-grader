@@ -121,6 +121,16 @@ class Capture:
             os.mkdir(self.sample_directory_extracted)
             self.sample_directory_extracted_e = self.sample_directory_extracted + "/e/"
             self.sample_directory_extracted_p = self.sample_directory_extracted + "/p/"
+            self.sample_directory_bkn = self.sample_directory + "/bkn/"
+            self.sample_directory_nbkn = self.sample_directory + "/nbkn/"
+            self.sample_directory_nylw = self.sample_directory + "/nylw/"
+            self.sample_directory_ylw = self.sample_directory + "/ylw/"
+            self.sample_directory_grn = self.sample_directory + "/grn/"
+            self.sample_directory_ngrn = self.sample_directory + "/ngrn/"
+            self.sample_directory_npaddy = self.sample_directory + "/npaddy/"
+            self.sample_directory_paddy = self.sample_directory + "/paddy/"
+            self.sample_directory_nchalky = self.sample_directory + "/nchalky/"
+            self.sample_directory_chalky = self.sample_directory + "/chalky/"
             os.mkdir(self.sample_directory_extracted_e)
             os.mkdir(self.sample_directory_extracted_p)
             print "Created: " + self.sample_directory_extracted
