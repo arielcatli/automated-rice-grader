@@ -141,6 +141,14 @@ class Capture:
             self.sample_directory_chalky = self.sample_directory + "/chalky/"
             os.mkdir(self.sample_directory_chalky)
             os.mkdir(self.sample_directory_nchalky)
+            self.sample_directory_nforeign = self.sample_directory + "/nforeign/"
+            self.sample_directory_foreign = self.sample_directory + "/foreign/"
+            os.mkdir(self.sample_directory_nforeign)
+            os.mkdir(self.sample_directory_foreign)
+            self.sample_directory_ndamaged = self.sample_directory + "/ndamaged/"
+            self.sample_directory_damaged = self.sample_directory + "/damaged/"
+            os.mkdir(self.sample_directory_ndamaged)
+            os.mkdir(self.sample_directory_damaged)
             os.mkdir(self.sample_directory_extracted_e)
             os.mkdir(self.sample_directory_extracted_p)
             print "Created: " + self.sample_directory_extracted
