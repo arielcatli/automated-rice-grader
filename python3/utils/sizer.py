@@ -59,9 +59,9 @@ class Sizer:
         
         
 if __name__ == "__main__":
-    sizer = Sizer("../sizer")    
-    sizer.add_images("../img-src/38/extracted/p/")
+    sizer = Sizer()    
+    #sizer.add_images("../img-src/38/extracted/p/")
     sizer.calibrate("../coin.jpg", 24)
-    print(sizer.size_up("dfs"))
-    sizer.generate_report("../img-src/38/extracted/report.bin")
+    #print(sizer.size_up("dfs"))
+    #sizer.generate_report("../img-src/38/extracted/report.bin")
     

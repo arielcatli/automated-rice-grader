@@ -47,19 +47,19 @@ class Classifier:
                 for image in images:
                     img_hist = np.zeros([])
                     file_name = data_folder + image
-                    self.dataset_files.append(file_name)
-                    image = cv2.imread(file_name)
+                    image_ = cv2.imread(file_name)
                     mask_image = cv2.threshold(cv2.GaussianBlur(cv2.imread(file_name, 0), (7,7), 0),127,255, cv2.THRESH_OTSU + cv2.THRESH_BINARY)
-                    r = cv2.calcHist([image], [0], mask_image[1], [256], [0,256])
+                    r = cv2.calcHist([image_], [0], mask_image[1], [256], [0,256])
                     r = r/max(r)
-                    g = cv2.calcHist([image], [1], mask_image[1], [256], [0,256])
+                    g = cv2.calcHist([image_], [1], mask_image[1], [256], [0,256])
                     g = g/max(g)
-                    b = cv2.calcHist([image], [2], mask_image[1], [256], [0,256])
+                    b = cv2.calcHist([image_], [2], mask_image[1], [256], [0,256])
                     b = b/max(b)
                    
                     img_hist = np.concatenate((r,g,b))
                     
-                    self.dataset_classification(img_hist)
+                 
+                    self.dataset_classification.append(img_hist)
                     
             
         
@@ -223,6 +223,9 @@ class Classifier:
         if self.__model != None:
             if self.isHOG:
                 self.dataset_classification = np.array(self.dataset_classification).reshape(-1,3780)
+
+            else:
+                print("COLOR HIST")
                 
             predictions = self.__model.predict(self.dataset_classification)
             print(predictions)
@@ -253,30 +256,34 @@ if __name__ == "__main__":
     bkn.add_dataset("../../img-src/52/extracted/p/")
     bkn.classify("../../img-src/52/bkn/", "../../img-src/52/nbkn")
     
-    ylw = Classifier(False)
-    ylw.add_model_dataset("../../training/ylw/data/ylw/", 1)
-    ylw.add_model_dataset("../../training/ylw/data/nylw/", 0)
-    ylw.build_model_dataset("../../training/ylw/bins/", "ylw_dataset")
-    ylw.build_model("../../training/ylw/bins/", "model_ylw")
-    ylw.add_test_dataset("../../testing/ylw/data/ylw/", 1)
-    ylw.add_test_dataset("../../testing/ylw/data/nylw/", 0)
-    ylw.build_test_dataset("../../testing/ylw/bins/", "ylw_test_dataset")
-    results = ylw.test_classify("../../testing/ylw/results/ylw/", "../../testing/ylw/results/nylw/")
-    print(results[2][0]/results[2][1])
-    print(results[3])
-#    
+##    ylw = Classifier(False)
+##    ylw.add_model_dataset("../../training/ylw/data/ylw/", 1)
+##    ylw.add_model_dataset("../../training/ylw/data/nylw/", 0)
+##    ylw.build_model_dataset("../../training/ylw/bins/", "ylw_dataset")
+##    ylw.build_model("../../training/ylw/bins/", "model_ylw")
+##    ylw.add_test_dataset("../../testing/ylw/data/ylw/", 1)
+##    ylw.add_test_dataset("../../testing/ylw/data/nylw/", 0)
+##    ylw.build_test_dataset("../../testing/ylw/bins/", "ylw_test_dataset")
+##    results = ylw.test_classify("../../testing/ylw/results/ylw/", "../../testing/ylw/results/nylw/")
+##    print(results[2][0]/results[2][1])
+##    print(results[3])
+###    
     grn = Classifier(False)
-    grn.add_model_dataset("../../training/grn/data/grn/", 1)
-    grn.add_model_dataset("../../training/grn/data/ngrn/", 0)
-    grn.build_model_dataset("../../training/grn/bins/", "grn_dataset")
-    grn.build_model("../../training/grn/bins/", "model_grn")
-    grn.add_test_dataset("../../testing/grn/data/grn/", 1)
-    grn.add_test_dataset("../../testing/grn/data/ngrn/", 0)
-    grn.build_test_dataset("../../testing/grn/bins/", "grn_test_dataset")
-    results = grn.test_classify("../../testing/grn/results/grn/", "../../testing/grn/results/ngrn/")
-    print(results[2][0]/results[2][1])
-    print(results[3])
-#   
+##    grn.add_model_dataset("../../training/grn/data/grn/", 1)
+##    grn.add_model_dataset("../../training/grn/data/ngrn/", 0)
+##    grn.build_model_dataset("../../training/grn/bins/", "grn_dataset")
+##    grn.build_model("../../training/grn/bins/", "model_grn")
+##    grn.add_test_dataset("../../testing/grn/data/grn/", 1)
+##    grn.add_test_dataset("../../testing/grn/data/ngrn/", 0)
+##    grn.build_test_dataset("../../testing/grn/bins/", "grn_test_dataset")
+##    results = grn.test_classify("../../testing/grn/results/grn/", "../../testing/grn/results/ngrn/")
+##    print(results[2][0]/results[2][1])
+##    print(results[3])
+#
+    grn.set_model("../../training/grn/bins/model_grn.bin")
+    grn.add_dataset("../../img-src/59/extracted/p")
+    grn.classify("../../img-src/59/ngrn/", "../../img-src/59/grn")
+##                 
     paddy = Classifier(False)
     paddy.add_model_dataset("../../training/paddy/data/paddy/", 1)
     paddy.add_model_dataset("../../training/paddy/data/npaddy/", 0)
@@ -288,20 +295,20 @@ if __name__ == "__main__":
     results = paddy.test_classify("../../testing/paddy/results/paddy/", "../../testing/paddy/results/npaddy/")
     print(results[2][0]/results[2][1])
     print(results[3])
-
-    foreign = Classifier(False)
-    foreign.add_model_dataset("../../training/foreign/data/foreign/", 1)
-    foreign.add_model_dataset("../../training/foreign/data/nforeign/", 0)
-    foreign.build_model_dataset("../../training/foreign/bins/", "foreign_dataset")
-    foreign.build_model("../../training/foreign/bins/", "model_foreign")
-    
-    
-    damaged = Classifier(False)
-    damaged.add_model_dataset("../../training/damaged/data/damaged/", 1)
-    damaged.add_model_dataset("../../training/damaged/data/ndamaged/", 0)
-    damaged.build_model_dataset("../../training/damaged/bins/", "damaged_dataset")
-    damaged.build_model("../../training/damaged/bins/", "model_damaged")    
-    
-    
-    
-    
+##
+##    foreign = Classifier(False)
+##    foreign.add_model_dataset("../../training/foreign/data/foreign/", 1)
+##    foreign.add_model_dataset("../../training/foreign/data/nforeign/", 0)
+##    foreign.build_model_dataset("../../training/foreign/bins/", "foreign_dataset")
+##    foreign.build_model("../../training/foreign/bins/", "model_foreign")
+##    
+##    
+##    damaged = Classifier(False)
+##    damaged.add_model_dataset("../../training/damaged/data/damaged/", 1)
+##    damaged.add_model_dataset("../../training/damaged/data/ndamaged/", 0)
+##    damaged.build_model_dataset("../../training/damaged/bins/", "damaged_dataset")
+##    damaged.build_model("../../training/damaged/bins/", "model_damaged")    
+##    
+##    
+##    
+##    
