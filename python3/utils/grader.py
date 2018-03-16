@@ -84,6 +84,7 @@ class Grader:
 if __name__ == "__main__":
     grader = Grader()
     grader.classifier_bkn.set_model("../../training/bkn/bins/model_bkn.bin")
-    grader.classifier_bkn.add_dataset()
+    #grader.classifier_bkn.add_dataset()
+    #print(grader.classifier_bkn.__model)
     
     

@@ -178,8 +178,12 @@ class Classifier:
     
     #def test(class1_dest, class0_dest, dataset=self.dataset_test, model=self.__model):
     def set_model(self, model_dir):
-        with open(model_dir, "rb") as model:
-            self.__model = pickle.load(model)
+        if os.path.exists(model_dir):
+            with open(model_dir, "rb") as model:
+                self.__model = pickle.load(model)
+                print(self.__model)
+        else:
+            print("The model is not found.")
             
     def test_classify(self, class0_dest, class1_dest):
         count = 0
