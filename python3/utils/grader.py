@@ -101,23 +101,30 @@ class Grader:
     def classify(self):
         self.classifier_foreign.add_dataset(self.sample_directory_extracted_p)
         self.classifier_foreign.classify(self.sample_directory_nforeign, self.sample_directory_foreign)
+        print("DONE: foreign material detection.")
         self.classifier_paddy.add_dataset(self.sample_directory_nforeign)
         self.classifier_paddy.classify(self.sample_directory_npaddy, self.sample_directory_paddy)
+        print("DONE: paddy detection.")
         
         self.classifier_bkn.add_dataset(self.sample_directory_npaddy)
         self.classifier_bkn.classify(self.sample_directory_nbkn, self.sample_directory_bkn)
+        print("DONE: broken kernel detection.")
         
         self.classifier_ylw.add_dataset(self.sample_directory_npaddy)
         self.classifier_ylw.classify(self.sample_directory_nylw, self.sample_directory_ylw)
+        print("DONE: yellow kernel detection.")
         
         self.classifier_grn.add_dataset(self.sample_directory_npaddy)
         self.classifier_grn.classify(self.sample_directory_ngrn, self.sample_directory_grn)
+        print("DONE: immature kernel detection.")
         
         self.classifier_damaged.add_dataset(self.sample_directory_npaddy)
         self.classifier_damaged.classify(self.sample_directory_ndamaged, self.sample_directory_damaged)
+        print("DONE: damaged kernel detection.")
         
         self.classifier_chalky.add_grains(self.sample_directory_npaddy)
         self.classifier_chalky.classify(self.sample_directory_nchalky, self.sample_directory_chalky)
+        print("DONE: chalky kernel detection.")
         
         
 if __name__ == "__main__":

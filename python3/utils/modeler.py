@@ -190,7 +190,6 @@ class Classifier:
         if os.path.exists(model_dir):
             with open(model_dir, "rb") as model:
                 self.__model = pickle.load(model)
-                print(self.__model)
         else:
             print("The model is not found.")
             
@@ -236,9 +235,7 @@ class Classifier:
             else:
                 self.dataset_classification = np.array(self.dataset_classification).reshape(-1, 768)
             
-            print(len(self.dataset_classification))
             predictions = self.__model.predict(self.dataset_classification)
-            print(predictions)
             
             for i,prediction in enumerate(predictions):
                 if prediction == 1:
@@ -260,8 +257,8 @@ if __name__ == "__main__":
     bkn.add_model_dataset("../../training/bkn/data/unbkn/", 0)
     bkn.build_model_dataset("../../training/bkn/bins/", "bkn_dataset")
     bkn.build_model("../../training/bkn/bins/", "model_bkn")
-    bkn.add_test_dataset("../../testing/bkn/data/bkn/", 0)
-    bkn.add_test_dataset("../../testing/bkn/data/unbkn/", 1)
+    bkn.add_test_dataset("../../testing/bkn/data/bkn/", 1)
+    bkn.add_test_dataset("../../testing/bkn/data/unbkn/", 0)
     bkn.build_test_dataset("../../testing/bkn/bins/", "bkn_test_dataset")
     results = bkn.test_classify("../../testing/bkn/results/bkn/", "../../testing/bkn/results/unbkn/")
     print(results[2][0]/results[2][1])
@@ -271,7 +268,7 @@ if __name__ == "__main__":
 #    bkn.add_dataset("../../img-src/52/extracted/p/")
 #    bkn.classify("../../img-src/52/bkn/", "../../img-src/52/nbkn")
     
-    ylw = Classifier(False)
+##    ylw = Classifier(False)
 #    ylw.add_model_dataset("../../training/ylw/data/ylw/", 1)
 #    ylw.add_model_dataset("../../training/ylw/data/nylw/", 0)
 #    ylw.build_model_dataset("../../training/ylw/bins/", "ylw_dataset")
@@ -282,9 +279,9 @@ if __name__ == "__main__":
 #    results = ylw.test_classify("../../testing/ylw/results/nylw/", "../../testing/ylw/results/ylw/")
 #    print(results[2][0]/results[2][1])
 #    print(results[3])
-    ylw.set_model("../../training/ylw/bins/model_ylw.bin")
-    ylw.add_dataset("../../testing/chalky/data/chalky/")
-    ylw.classify("../../testing/ylw/results/nylw/", "../../testing/ylw/results/ylw/")
+##    ylw.set_model("../../training/ylw/bins/model_ylw.bin")
+##    ylw.add_dataset("../../testing/chalky/data/chalky/")
+##    ylw.classify("../../testing/ylw/results/nylw/", "../../testing/ylw/results/ylw/")
     
 ###    
 #    grn = Classifier(False)
