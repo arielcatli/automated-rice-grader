@@ -71,7 +71,7 @@ class Capture:
         camera.capture(current)
         self.whole_sample += 1
         camera.close()
-        self.__extr = extract(current, self.sample_directory_extracted, self.__extracted_count)
+        self.__extr = extract(current, self.sample_directory_extracted_e, self.sample_directory_extracted_p, self.__extracted_count)
         self.__grain_list_masked.append(self.__extr[1])
         self.__grain_list_platform.append(self.__extr[2])
         self.__extracted_count += self.__extr[0]
@@ -119,7 +119,13 @@ class Capture:
             os.mkdir(self.sample_directory)
             self.sample_directory_extracted = self.sample_directory + "/extracted/"
             os.mkdir(self.sample_directory_extracted)
+            self.sample_directory_extracted_e = self.sample_directory_extracted + "/e/"
+            self.sample_directory_extracted_p = self.sample_directory_extracted + "/p/"
+            os.mkdir(self.sample_directory_extracted_e)
+            os.mkdir(self.sample_directory_extracted_p)
             print "Created: " + self.sample_directory_extracted
+            print "Created: " + self.sample_directory_extracted_e
+            print "Created: " + self.sample_directory_extracted_p
             return True
 
     def __update_log_file(self):

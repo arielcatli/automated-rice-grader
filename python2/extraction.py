@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 from math import ceil
 
-def extract(sample_image_directory, sample_directory_extracted, start):
+def extract(sample_image_directory, sample_directory_extracted_e, sample_directory_extracted_p, start):
     ret_image = cv2.imread(sample_image_directory)
     sample_image = cv2.imread(sample_image_directory)
     sample_image = cv2.cvtColor(sample_image, cv2.COLOR_BGR2GRAY)
@@ -33,8 +33,8 @@ def extract(sample_image_directory, sample_directory_extracted, start):
             #mask = np.zeros(grain[:2], np.uint8)
             masked = cv2.bitwise_and(grain, grain, mask = grain_mask)
             if(masked.shape[1] > 10):
-                grain_list_masked.append(sample_directory_extracted+"e"+str(i+start)+".jpg")
-                cv2.imwrite(sample_directory_extracted+"/e"+str(i+start)+".jpg", masked)
+                grain_list_masked.append(sample_directory_extracted_e+"e"+str(i+start)+".jpg")
+                cv2.imwrite(sample_directory_extracted_e+"/e"+str(i+start)+".jpg", masked)
                 grain_count += 1
                 
                 
@@ -42,8 +42,8 @@ def extract(sample_image_directory, sample_directory_extracted, start):
                 vertical_offset = int(ceil((platform.shape[0] - masked.shape[0])/2))
                 horizontal_offset = int(ceil((platform.shape[1] - masked.shape[1])/2))
                 platform[vertical_offset:(vertical_offset+masked.shape[0]), horizontal_offset:(horizontal_offset+masked.shape[1])] = masked
-                grain_list_platform.append(sample_directory_extracted+"p"+str(i+start)+".jpg")
-                cv2.imwrite(sample_directory_extracted+"/p"+str(i+start)+".jpg", platform)
+                grain_list_platform.append(sample_directory_extracted_p+"p"+str(i+start)+".jpg")
+                cv2.imwrite(sample_directory_extracted_p+"/p"+str(i+start)+".jpg", platform)
                 
             
         else:
