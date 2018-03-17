@@ -25,7 +25,7 @@ class Grader:
         self.sample_directory_bkn = ""
         self.sample_directory_nbkn = ""
         self.sample_directory_grn = ""
-        self.sample_directory_ngrg = ""
+        self.sample_directory_ngrn = ""
         self.sample_directory_nylw = ""
         self.sample_directory_ylw = ""
         self.sample_directory_ndamaged = ""
@@ -34,6 +34,20 @@ class Grader:
         self.sample_directory_nforeign = ""
         self.sample_directory_nchalky = ""
         self.sample_directory_chalky = ""
+        self.count_bkn = 0
+        self.count_nbkn = 0
+        self.count_grn = 0
+        self.count_ngrn = 0
+        self.count_ylw = 0
+        self.count_nylw = 0
+        self.count_damaged = 0
+        self.count_ndamaged = 0
+        self.count_foreign = 0
+        self.count_nforeign = 0
+        self.count_chalky = 0
+        self.count_nchalky = 0
+        self.count_paddy = 0
+        self.count_npaddy = 0
         
         #classifiers
         self.classifier_bkn = ""
@@ -53,6 +67,7 @@ class Grader:
 
         #load the models to the classifiers
         self.__load_models()
+        
 
 
         
@@ -97,6 +112,9 @@ class Grader:
         self.classifier_foreign.set_model("../../training/foreign/bins/model_foreign.bin")
         self.classifier_damaged.set_model("../../training/damaged/bins/model_damaged.bin")
         self.classifier_chalky.calibrate([[190, 255],[190, 255],[180, 255]])
+        
+        self.__generate_report()
+        
 
     def classify(self):
         self.classifier_foreign.add_dataset(self.sample_directory_extracted_p)
@@ -126,9 +144,43 @@ class Grader:
         self.classifier_chalky.classify(self.sample_directory_nchalky, self.sample_directory_chalky)
         print("DONE: chalky kernel detection.")
         
+        self.__generate_report()
+        
+    def __generate_report(self):
+        report = ""
+        self.count_bkn = len(os.listdir(self.sample_directory_bkn))
+        self.count_nbkn = len(os.listdir(self.sample_directory_nbkn))
+        self.count_grn = len(os.listdir(self.sample_directory_grn))
+        self.count_ngrn = len(os.listdir(self.sample_directory_ngrn))
+        self.count_ylw = len(os.listdir(self.sample_directory_ylw))
+        self.count_nylw = len(os.listdir(self.sample_directory_nylw))
+        self.count_damaged = len(os.listdir(self.sample_directory_damaged))
+        self.count_ndamaged = len(os.listdir(self.sample_directory_ndamaged))
+        self.count_foreign = len(os.listdir(self.sample_directory_foreign))
+        self.count_nforeign = len(os.listdir(self.sample_directory_nforeign))
+        self.count_chalky = len(os.listdir(self.sample_directory_chalky))
+        self.count_nchalky = len(os.listdir(self.sample_directory_nchalky))
+        self.count_paddy = len(os.listdir(self.sample_directory_paddy))
+        self.count_npaddy = len(os.listdir(self.sample_directory_npaddy))
+        self.count_total = len(os.listdir(self.sample_directory_nforeign))
+        
+        report += "{:25} {:10}\n".format("TOTAL GRAIN COUNT: ", self.count_total)
+        report += "{:25} {:10}\n".format("BROKEN: ", self.count_bkn)
+        report += "{:25} {:10}\n".format("IMMATURE/GREEN: ", self.count_grn)
+        report += "{:25} {:10}\n".format("FERMENTED/YELLOW: ", self.count_ylw)
+        report += "{:25} {:10}\n".format("DAMAGED: ", self.count_damaged)
+        report += "{:25} {:10}\n".format("FOREIGN MATERIALS: ", self.count_foreign)
+        report += "{:25} {:10}\n".format("CHALKY: ", self.count_chalky)
+        report += "{:25} {:10}\n".format("PADDY: ", self.count_paddy)
+        
+        print(report)
+        
+       
+        
+        
         
 if __name__ == "__main__":
     grader = Grader()
-    grader.classify()
+    #grader.classify()
     #grader.classify_HOG()
     
