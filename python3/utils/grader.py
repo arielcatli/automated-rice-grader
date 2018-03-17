@@ -6,6 +6,7 @@ Created on Fri Mar 16 16:38:11 2018
 """
 
 from chalky_classifier import Chalky_classifier
+from grain_sizer import Grain_sizer
 from modeler import Classifier
 from sizer import Sizer
 import cv2
@@ -48,6 +49,11 @@ class Grader:
         self.count_nchalky = 0
         self.count_paddy = 0
         self.count_npaddy = 0
+        self.count_red = 0
+        self.count_nred = 0
+        self.count_brewer = 0
+        self.count_nbrewer = 0
+        self.count_size = []
         
         #classifiers
         self.classifier_bkn = ""
@@ -58,6 +64,8 @@ class Grader:
         self.classifier_damaged = ""
         self.classifier_sizer = ""
         self.classifier_chalky = ""
+        self.classifier_red = ""
+        self.classifier_sizer = ""
         
         
         #-------------------------------------
@@ -78,8 +86,9 @@ class Grader:
         self.classifier_paddy = Classifier(isHOG = False)
         self.classifier_foreign = Classifier(isHOG = False)
         self.classifier_damaged = Classifier (isHOG = False)
-        self.classifier_sizer = Sizer()
+        self.classifier_sizer = Grain_sizer()
         self.classifier_chalky = Chalky_classifier()
+        self.classifier_red = Classifier(isHOG = False)
         
     def __determine_directories(self):
         with open(self.__LOG_TXT, "r") as log_file:
@@ -103,23 +112,29 @@ class Grader:
         self.sample_directory_chalky = self.sample_directory+"chalky/"
         self.sample_directory_paddy = self.sample_directory+"paddy/"
         self.sample_directory_npaddy = self.sample_directory+"npaddy/"
+        self.sample_directory_nred = self.sample_directory+"nred/"
+        self.sample_directory_red = self.sample_directory+"red/"
+        self.sample_directory_nbrewer = self.sample_directory+"nbrewer/"
+        self.sample_directory_brewer = self.sample_directory+"brewer/"
         
     def __load_models(self):
         self.classifier_bkn.set_model("../../training/bkn/bins/model_bkn.bin")
         self.classifier_ylw.set_model("../../training/ylw/bins/model_ylw.bin")
         self.classifier_paddy.set_model("../../training/paddy/bins/model_paddy.bin")
+        self.classifier_red.set_model("../../training/red/bins/model_red.bin")
         self.classifier_grn.set_model("../../training/grn/bins/model_grn.bin")
         self.classifier_foreign.set_model("../../training/foreign/bins/model_foreign.bin")
         self.classifier_damaged.set_model("../../training/damaged/bins/model_damaged.bin")
         self.classifier_chalky.calibrate([[190, 255],[190, 255],[180, 255]])
         
-        self.__generate_report()
+        
         
 
     def classify(self):
         self.classifier_foreign.add_dataset(self.sample_directory_extracted_p)
         self.classifier_foreign.classify(self.sample_directory_nforeign, self.sample_directory_foreign)
         print("DONE: foreign material detection.")
+        
         self.classifier_paddy.add_dataset(self.sample_directory_nforeign)
         self.classifier_paddy.classify(self.sample_directory_npaddy, self.sample_directory_paddy)
         print("DONE: paddy detection.")
@@ -132,6 +147,10 @@ class Grader:
         self.classifier_ylw.classify(self.sample_directory_nylw, self.sample_directory_ylw)
         print("DONE: yellow kernel detection.")
         
+        self.classifier_red.add_dataset(self.sample_directory_npaddy)
+        self.classifier_red.classify(self.sample_directory_nred, self.sample_directory_red)
+        print("DONE: red kernel detection.")
+        
         self.classifier_grn.add_dataset(self.sample_directory_npaddy)
         self.classifier_grn.classify(self.sample_directory_ngrn, self.sample_directory_grn)
         print("DONE: immature kernel detection.")
@@ -143,6 +162,16 @@ class Grader:
         self.classifier_chalky.add_grains(self.sample_directory_npaddy)
         self.classifier_chalky.classify(self.sample_directory_nchalky, self.sample_directory_chalky)
         print("DONE: chalky kernel detection.")
+        
+        self.classifier_sizer.add_dataset(self.sample_directory_nbkn)
+        self.count_size = self.classifier_sizer.grain_size_classification(self.classifier_sizer.average_size())
+        print("DONE: size classification.")
+        
+        self.classifier_sizer.find_brewers(self.sample_directory_bkn, self.sample_directory_nbrewer, self.sample_directory_brewer)
+        print("DONE: brewer detection.")
+        
+        
+        
         
         self.__generate_report()
         
@@ -163,16 +192,23 @@ class Grader:
         self.count_paddy = len(os.listdir(self.sample_directory_paddy))
         self.count_npaddy = len(os.listdir(self.sample_directory_npaddy))
         self.count_total = len(os.listdir(self.sample_directory_nforeign))
+        self.count_red = len(os.listdir(self.sample_directory_red))
+        self.count_nred = len(os.listdir(self.sample_directory_nred))
+        self.count_nbrewer = len(os.listdir(self.sample_directory_nbrewer))
+        self.count_brewer = len(os.listdir(self.sample_directory_brewer))
         
-        report += "{:25} {:10}\n".format("TOTAL GRAIN COUNT: ", self.count_total)
-        report += "{:25} {:10}\n".format("BROKEN: ", self.count_bkn)
-        report += "{:25} {:10}\n".format("IMMATURE/GREEN: ", self.count_grn)
-        report += "{:25} {:10}\n".format("FERMENTED/YELLOW: ", self.count_ylw)
-        report += "{:25} {:10}\n".format("DAMAGED: ", self.count_damaged)
-        report += "{:25} {:10}\n".format("FOREIGN MATERIALS: ", self.count_foreign)
-        report += "{:25} {:10}\n".format("CHALKY: ", self.count_chalky)
-        report += "{:25} {:10}\n".format("PADDY: ", self.count_paddy)
         
+        report += "{:25} {:10}{:15.1%}\n".format("BROKEN: ", self.count_bkn, self.count_bkn/self.count_total)
+        report += "{:25} {:10}{:15.1%}\n".format("BREWERS: ", self.count_brewer, self.count_brewer/self.count_total)
+        report += "{:25} {:10}{:15.1%}\n".format("IMMATURE/GREEN: ", self.count_grn, self.count_grn/self.count_total)
+        report += "{:25} {:10}{:15.1%}\n".format("FERMENTED/YELLOW: ", self.count_ylw, self.count_ylw/self.count_total)
+        report += "{:25} {:10}{:15.1%}\n".format("DAMAGED: ", self.count_damaged, self.count_damaged/self.count_total)
+        report += "{:25} {:10}{:15.1%}\n".format("FOREIGN MATERIALS: ", self.count_foreign, self.count_foreign/self.count_total)
+        report += "{:25} {:10}{:15.1%}\n".format("CHALKY: ", self.count_chalky, self.count_chalky/self.count_total)
+        report += "{:25} {:10}{:15.1%}\n".format("PADDY: ", self.count_paddy, self.count_paddy/self.count_total)
+        report += "{:25} {:10}{:15.1%}\n".format("RED: ", self.count_red, self.count_red/self.count_total)
+        report += "{:25} {:10.2f}mm{:>13}\n".format("SIZE: ", self.count_size[0], self.count_size[1])
+        report += "\n{:25} {:10}\n".format("TOTAL GRAIN COUNT: ", self.count_total)
         print(report)
         
        
@@ -181,6 +217,6 @@ class Grader:
         
 if __name__ == "__main__":
     grader = Grader()
-    #grader.classify()
+    grader.classify()
     #grader.classify_HOG()
     

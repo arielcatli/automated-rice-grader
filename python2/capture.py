@@ -149,6 +149,11 @@ class Capture:
             self.sample_directory_damaged = self.sample_directory + "/damaged/"
             os.mkdir(self.sample_directory_ndamaged)
             os.mkdir(self.sample_directory_damaged)
+            self.sample_directory_nred = self.sample_directory + "/nred/"
+            self.sample_directory_red = self.sample_directory + "/red/"
+            os.mkdir(self.sample_directory_nred)
+            os.mkdir(self.sample_directory_red)
+            
             os.mkdir(self.sample_directory_extracted_e)
             os.mkdir(self.sample_directory_extracted_p)
             print "Created: " + self.sample_directory_extracted
