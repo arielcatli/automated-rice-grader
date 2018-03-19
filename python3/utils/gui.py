@@ -18,7 +18,7 @@ class GUI:
         self.__btn_capture.pack()
         self.__btn_view_grains = tk.Button(self.__main_frame,  text="VIEW GRAINS", width = 50, height=3, state=tk.DISABLED)
         self.__btn_view_grains.pack()
-        self.__btn_grade = tk.Button(self.__main_frame, state=tk.DISABLED, text="GRADE", width = 50, height=3)
+        self.__btn_grade = tk.Button(self.__main_frame, state=tk.DISABLED, text="GRADE", width = 50, height=3, command=self.__grade)
         self.__btn_grade.pack()
         self.__btn_log = tk.Button(self.__main_frame, text="LOG", width = 50, height=3)
         self.__btn_log.pack()
@@ -50,5 +50,10 @@ class GUI:
         
     def __close(self, window):
         window.destroy()
+        
+    def __grade(self):
+        subprocess.call(["cd", "/home/pi/automated-rice-grader/python3"])
+        subprocess.call(["/usr/bin/python3.5", "grader.py"])
+        
 if __name__ == "__main__":
     gui = GUI()

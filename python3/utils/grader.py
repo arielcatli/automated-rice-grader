@@ -13,6 +13,9 @@ import cv2
 import pickle
 import numpy as np
 import os
+import tkinter as tk
+from tkinter import ttk
+
 
 class Grader:
     def __init__(self):
@@ -197,19 +200,95 @@ class Grader:
         self.count_nbrewer = len(os.listdir(self.sample_directory_nbrewer))
         self.count_brewer = len(os.listdir(self.sample_directory_brewer))
         
+        self.__counts = {"bkn":self.count_bkn/self.count_total,
+                       "brewer":self.count_brewer/self.count_total,
+                       "grn":self.count_grn/self.count_total,
+                       "ylw":self.count_ylw/self.count_total,
+                       "damaged":self.count_damaged/self.count_total,
+                       "foreign":self.count_foreign/self.count_total,
+                       "chalky":self.count_chalky/self.count_total,
+                       "paddy":self.count_paddy/self.count_total,
+                       "red":self.count_red/self.count_total}
         
-        report += "{:25} {:10}{:15.1%}\n".format("BROKEN: ", self.count_bkn, self.count_bkn/self.count_total)
-        report += "{:25} {:10}{:15.1%}\n".format("BREWERS: ", self.count_brewer, self.count_brewer/self.count_total)
-        report += "{:25} {:10}{:15.1%}\n".format("IMMATURE/GREEN: ", self.count_grn, self.count_grn/self.count_total)
-        report += "{:25} {:10}{:15.1%}\n".format("FERMENTED/YELLOW: ", self.count_ylw, self.count_ylw/self.count_total)
-        report += "{:25} {:10}{:15.1%}\n".format("DAMAGED: ", self.count_damaged, self.count_damaged/self.count_total)
-        report += "{:25} {:10}{:15.1%}\n".format("FOREIGN MATERIALS: ", self.count_foreign, self.count_foreign/self.count_total)
-        report += "{:25} {:10}{:15.1%}\n".format("CHALKY: ", self.count_chalky, self.count_chalky/self.count_total)
-        report += "{:25} {:10}{:15.1%}\n".format("PADDY: ", self.count_paddy, self.count_paddy/self.count_total)
-        report += "{:25} {:10}{:15.1%}\n".format("RED: ", self.count_red, self.count_red/self.count_total)
+        report += "{:25} {:10}{:15.1%}\n".format("BROKEN: ", self.count_bkn, self.__counts["bkn"])
+        report += "{:25} {:10}{:15.1%}\n".format("BREWERS: ", self.count_brewer, self.__counts["brewer"])
+        report += "{:25} {:10}{:15.1%}\n".format("IMMATURE/GREEN: ", self.count_grn, self.__counts["grn"])
+        report += "{:25} {:10}{:15.1%}\n".format("FERMENTED/YELLOW: ", self.count_ylw, self.__counts["ylw"])
+        report += "{:25} {:10}{:15.1%}\n".format("DAMAGED: ", self.count_damaged, self.__counts["damaged"])
+        report += "{:25} {:10}{:15.1%}\n".format("FOREIGN MATERIALS: ", self.count_foreign, self.__counts["foreign"])
+        report += "{:25} {:10}{:15.1%}\n".format("CHALKY: ", self.count_chalky, self.__counts["chalky"])
+        report += "{:25} {:10}{:15.1%}\n".format("PADDY: ", self.count_paddy, self.__counts["paddy"])
+        report += "{:25} {:10}{:15.1%}\n".format("RED: ", self.count_red, self.__counts["red"])
         report += "{:25} {:10.2f}mm{:>13}\n".format("SIZE: ", self.count_size[0], self.count_size[1])
         report += "\n{:25} {:10}\n".format("TOTAL GRAIN COUNT: ", self.count_total)
+        self.report = report
         print(report)
+        self.show_report()
+        
+    def show_report(self):
+        #font_mono = tkFont.Font(family='Consolas', size=15, weight='bold')
+        self.__root = tk.Tk()
+        self.__root.title("Grade Report")
+        self.__root_frame1 = ttk.Frame(self.__root, padding=50)
+        self.__root_frame1.grid(column=0, row=0)
+        self.__root_frame2 = ttk.Frame(self.__root, padding=50)
+        self.__root_frame2.grid(column=1, row=0)
+        ttk.Label(self.__root_frame1, text=self.report, font='TkFixedFont', justify=tk.LEFT).pack()
+        self.__root.attributes("-fullscreen", True)
+        ttk.Label(self.__root_frame2, text=self.__grade()[0], font='TkFixedFont', justify=tk.LEFT).pack()
+        self.__btn_close = tk.Button(self.__root_frame2, text="BACK", command=self.__btn_close)
+        self.__btn_close.pack()
+        self.__root.mainloop()
+        
+    def __btn_close(self):
+        self.__root.destroy()
+        
+    def __grade(self):
+        grade = ["PREMIUM", "GRADE 1", "GRADE 2", "GRADE 3", "GRADE 4", "GRADE 5"]
+        grade_structure = {"bkn" : [5.0, 10.0, 15.0, 25.0, 35.0, 45.0],
+                           "brewer" : [0.10, 0.20, 0.40, 0.60, 1.00, 2.00],
+                           "grn" : [0.20, 0.30, 0.50, 2.00, 2.00, 2.00],
+                           "ylw" : [0.50, 0.70, 1.00, 3.00, 5.00, 8.00],
+                           "damaged" : [0.50, 0.70, 1.00, 1.50, 2.00, 3.00],
+                           "chalky" : [4.00, 5.00, 7.00, 7.00, 10.00, 15.00],
+                           "red" : [1.00, 2.00, 4.00, 5.00, 5.00, 7.00],
+                           "foreign" : [0.025, 0.10, 0.15, 0.17, 0.20, 0.25],
+                           "paddy" : [10.00, 15.00, 20.00, 25.00, 25.00, 25.00]}
+        grade_report = "{:<10}{:>15}{:>15}{:>10}\n".format("GRAIN", "PERCENTAGE", "GRADE POINT", "GRADE")
+        
+        max_step = 0
+        max_step_global = 0
+        for count in self.__counts:
+            max_step = 0
+            basis = grade_structure[count]
+            if len(basis) != 0:
+                 for i,grade_step in enumerate(basis):
+                     if self.__counts[count]*100 > grade_step:
+                         max_step = i
+            
+            else:
+                print("No reference data provided")
+            
+            if max_step > max_step_global:
+                max_step_global = max_step
+            
+            grade_report += "{:<10}{:>15.2%}{:>15.2%}{:>10}\n".format(count, self.__counts[count], (grade_structure[count])[max_step]/100, grade[max_step])
+            
+            
+        print(grade_report)
+        return(grade_report, grade[max_step])
+                         
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        for percentage in self.__counts:
+            print(percentage)
         
        
         
