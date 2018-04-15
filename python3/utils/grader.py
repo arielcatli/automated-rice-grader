@@ -86,7 +86,7 @@ class Grader:
         self.classifier_bkn = Classifier(isHOG = True)
         self.classifier_grn = Classifier(isHOG = False)
         self.classifier_ylw = Classifier(isHOG = False)
-        self.classifier_paddy = Classifier(isHOG = False)
+        self.classifier_paddy = Classifier(isHOG = True)
         self.classifier_foreign = Classifier(isHOG = False)
         self.classifier_damaged = Classifier (isHOG = False)
         self.classifier_sizer = Grain_sizer()
@@ -127,7 +127,7 @@ class Grader:
         self.classifier_red.set_model("../../training/red/bins/model_red.bin")
         self.classifier_grn.set_model("../../training/grn/bins/model_grn.bin")
         self.classifier_foreign.set_model("../../training/foreign/bins/model_foreign.bin")
-        self.classifier_damaged.set_model("../../training/damaged/bins/model_damaged.bin")
+        #self.classifier_damaged.set_model("../../training/damaged/bins/model_damaged.bin")
         self.classifier_chalky.calibrate([[190, 255],[190, 255],[180, 255]])
         
         
@@ -158,9 +158,9 @@ class Grader:
         self.classifier_grn.classify(self.sample_directory_ngrn, self.sample_directory_grn)
         print("DONE: immature kernel detection.")
         
-        self.classifier_damaged.add_dataset(self.sample_directory_npaddy)
-        self.classifier_damaged.classify(self.sample_directory_ndamaged, self.sample_directory_damaged)
-        print("DONE: damaged kernel detection.")
+        #self.classifier_damaged.add_dataset(self.sample_directory_npaddy)
+        #self.classifier_damaged.classify(self.sample_directory_ndamaged, self.sample_directory_damaged)
+        #print("DONE: damaged kernel detection.")
         
         self.classifier_chalky.add_grains(self.sample_directory_npaddy)
         self.classifier_chalky.classify(self.sample_directory_nchalky, self.sample_directory_chalky)
@@ -186,8 +186,8 @@ class Grader:
         self.count_ngrn = len(os.listdir(self.sample_directory_ngrn))
         self.count_ylw = len(os.listdir(self.sample_directory_ylw))
         self.count_nylw = len(os.listdir(self.sample_directory_nylw))
-        self.count_damaged = len(os.listdir(self.sample_directory_damaged))
-        self.count_ndamaged = len(os.listdir(self.sample_directory_ndamaged))
+        #self.count_damaged = len(os.listdir(self.sample_directory_damaged))
+        #self.count_ndamaged = len(os.listdir(self.sample_directory_ndamaged))
         self.count_foreign = len(os.listdir(self.sample_directory_foreign))
         self.count_nforeign = len(os.listdir(self.sample_directory_nforeign))
         self.count_chalky = len(os.listdir(self.sample_directory_chalky))
@@ -204,7 +204,7 @@ class Grader:
                        "brewer":self.count_brewer/self.count_total,
                        "grn":self.count_grn/self.count_total,
                        "ylw":self.count_ylw/self.count_total,
-                       "damaged":self.count_damaged/self.count_total,
+                       #"damaged":self.count_damaged/self.count_total,
                        "foreign":self.count_foreign/self.count_total,
                        "chalky":self.count_chalky/self.count_total,
                        "paddy":self.count_paddy/self.count_total,
@@ -214,7 +214,7 @@ class Grader:
         report += "{:25} {:10}{:15.1%}\n".format("BREWERS: ", self.count_brewer, self.__counts["brewer"])
         report += "{:25} {:10}{:15.1%}\n".format("IMMATURE/GREEN: ", self.count_grn, self.__counts["grn"])
         report += "{:25} {:10}{:15.1%}\n".format("FERMENTED/YELLOW: ", self.count_ylw, self.__counts["ylw"])
-        report += "{:25} {:10}{:15.1%}\n".format("DAMAGED: ", self.count_damaged, self.__counts["damaged"])
+        #report += "{:25} {:10}{:15.1%}\n".format("DAMAGED: ", self.count_damaged, self.__counts["damaged"])
         report += "{:25} {:10}{:15.1%}\n".format("FOREIGN MATERIALS: ", self.count_foreign, self.__counts["foreign"])
         report += "{:25} {:10}{:15.1%}\n".format("CHALKY: ", self.count_chalky, self.__counts["chalky"])
         report += "{:25} {:10}{:15.1%}\n".format("PADDY: ", self.count_paddy, self.__counts["paddy"])
@@ -226,13 +226,12 @@ class Grader:
         self.show_report()
         
     def show_report(self):
-        #font_mono = tkFont.Font(family='Consolas', size=15, weight='bold')
         self.__root = tk.Tk()
         self.__root.title("Grade Report")
-        self.__root_frame1 = ttk.Frame(self.__root, padding=50)
-        self.__root_frame1.grid(column=0, row=0)
-        self.__root_frame2 = ttk.Frame(self.__root, padding=50)
-        self.__root_frame2.grid(column=1, row=0)
+        self.__root_frame1 = ttk.Frame(self.__root, padding=25)
+        self.__root_frame1.pack()
+        self.__root_frame2 = ttk.Frame(self.__root, padding=25)
+        self.__root_frame2.pack()
         ttk.Label(self.__root_frame1, text=self.report, font='TkFixedFont', justify=tk.LEFT).pack()
         self.__root.attributes("-fullscreen", True)
         ttk.Label(self.__root_frame2, text=self.__grade()[0], font='TkFixedFont', justify=tk.LEFT).pack()
@@ -249,12 +248,12 @@ class Grader:
                            "brewer" : [0.10, 0.20, 0.40, 0.60, 1.00, 2.00],
                            "grn" : [0.20, 0.30, 0.50, 2.00, 2.00, 2.00],
                            "ylw" : [0.50, 0.70, 1.00, 3.00, 5.00, 8.00],
-                           "damaged" : [0.50, 0.70, 1.00, 1.50, 2.00, 3.00],
+                           #"damaged" : [0.50, 0.70, 1.00, 1.50, 2.00, 3.00],
                            "chalky" : [4.00, 5.00, 7.00, 7.00, 10.00, 15.00],
                            "red" : [1.00, 2.00, 4.00, 5.00, 5.00, 7.00],
                            "foreign" : [0.025, 0.10, 0.15, 0.17, 0.20, 0.25],
                            "paddy" : [10.00, 15.00, 20.00, 25.00, 25.00, 25.00]}
-        grade_report = "{:<10}{:>15}{:>15}{:>10}\n".format("GRAIN", "PERCENTAGE", "GRADE POINT", "GRADE")
+        #grade_report = "{:<10}{:>15}{:>15}{:>10}\n".format("GRAIN", "PERCENTAGE", "GRADE POINT", "GRADE")
         
         max_step = 0
         max_step_global = 0
@@ -272,11 +271,12 @@ class Grader:
             if max_step > max_step_global:
                 max_step_global = max_step
             
-            grade_report += "{:<10}{:>15.2%}{:>15.2%}{:>10}\n".format(count, self.__counts[count], (grade_structure[count])[max_step]/100, grade[max_step])
+            #grade_report += "{:<10}{:>15.2%}{:>15.2%}{:>10}\n".format(count, self.__counts[count], (grade_structure[count])[max_step]/100, grade[max_step])
             
-            
+        grade_report = "\nGRADE: " + grade[max_step_global]    
         print(grade_report)
-        return(grade_report, grade[max_step])
+        
+        return(grade_report, grade[max_step_global])
                          
         
         

@@ -23,8 +23,9 @@ class Capture:
 
         #gui
         self.__create_gui()
-        
 
+        self.__extracted_count = 0    
+    
     def __create_gui(self):
         self.__root = tk.Tk()
         self.__root.geometry = "200x200"
@@ -76,7 +77,7 @@ class Capture:
         self.__grain_list_platform.append(self.__extr[2])
         self.__extracted_count += self.__extr[0]
         self.__entry_count_str.set(str(self.__extracted_count))
-        if self.__extracted_count > 100:
+        if self.__extracted_count > 200:
             self.__root_summary = tk.Tk()
             self.__root_summary.title("SUMMARY")
             tk.Label(self.__root_summary, text="TOTAL: "+ str(self.__extracted_count)).pack()
@@ -153,6 +154,10 @@ class Capture:
             self.sample_directory_red = self.sample_directory + "/red/"
             os.mkdir(self.sample_directory_nred)
             os.mkdir(self.sample_directory_red)
+            self.sample_directory_nbrewer = self.sample_directory + "/nbrewer/" 
+            self.sample_directory_brewer = self.sample_directory + "/brewer/"
+            os.mkdir(self.sample_directory_brewer)
+            os.mkdir(self.sample_directory_nbrewer)
             
             os.mkdir(self.sample_directory_extracted_e)
             os.mkdir(self.sample_directory_extracted_p)

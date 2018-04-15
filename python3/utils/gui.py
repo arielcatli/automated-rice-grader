@@ -17,11 +17,11 @@ class GUI:
         self.__btn_capture = tk.Button(self.__main_frame, text="CAPTURE", width = 50, height=3, command=self.__capture)
         self.__btn_capture.pack()
         self.__btn_view_grains = tk.Button(self.__main_frame,  text="VIEW GRAINS", width = 50, height=3, state=tk.DISABLED)
-        self.__btn_view_grains.pack()
-        self.__btn_grade = tk.Button(self.__main_frame, state=tk.DISABLED, text="GRADE", width = 50, height=3, command=self.__grade)
+        #self.__btn_view_grains.pack()
+        self.__btn_grade = tk.Button(self.__main_frame, text="GRADE", width = 50, height=3, command=self.__grade)
         self.__btn_grade.pack()
         self.__btn_log = tk.Button(self.__main_frame, text="LOG", width = 50, height=3)
-        self.__btn_log.pack()
+        #self.__btn_log.pack()
         self.__btn_LED_ON = tk.Button(self.__main_frame, text="LED ON", width = 50, height=3, command=self.__led_on)
         self.__btn_LED_ON.pack()
         self.__btn_LED_OFF = tk.Button(self.__main_frame, text="LED OFF", width = 50, height=3, command=self.__led_off, state=tk.DISABLED)
@@ -52,8 +52,7 @@ class GUI:
         window.destroy()
         
     def __grade(self):
-        subprocess.call(["cd", "/home/pi/automated-rice-grader/python3"])
-        subprocess.call(["/usr/bin/python3.5", "grader.py"])
+        subprocess.call(["/usr/bin/python3.5", "/home/pi/automated-rice-grader/python3/utils/grader.py"])
         
 if __name__ == "__main__":
     gui = GUI()

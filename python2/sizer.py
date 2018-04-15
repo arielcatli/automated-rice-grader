@@ -40,26 +40,28 @@ class Sizer:
         contours = cv2.findContours(binary_image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     
         max_height = 0
-        max_contour = 0
+        max_contour = []
         for i,contour in enumerate(contours[1]):
             x,y,w,h = cv2.boundingRect(contour)
             if max_height < h:
                 max_height = h
                 max_contour = contour
-                
-        x,y,w,h = cv2.boundingRect(max_contour)        
-        self.__isCalibrated = True
-        unitPerPixel = object_size/h
-        self.unitPerPixel = unitPerPixel
-        return unitPerPixel
-    
+        if len(max_contour) != 0:                
+            x,y,w,h = cv2.boundingRect(max_contour)        
+            self.__isCalibrated = True
+            unitPerPixel = object_size/h
+            self.unitPerPixel = unitPerPixel
+            return unitPerPixel
+        else:
+            return 0
+        
     def generate_report(self, report_directory):
         with open(report_directory, "wb") as report:
             pickle.dump([self.avg_size, self.grain_count, self.unitPerPixel], report)
         
         
 if __name__ == "__main__":
-    sizer = Sizer("../sizer")    
+    sizer = Sizer()    
     sizer.add_images("../img-src/38/extracted/p/")
     sizer.calibrate("../coin.jpg", 24)
     print(sizer.size_up("dfs"))
