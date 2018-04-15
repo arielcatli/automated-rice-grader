@@ -1,9 +1,9 @@
 from picamera import PiCamera
 import cv2
 import os
-from extraction import extract
+##from extraction import extract
 from extract_grains import extract_grains
-import Tkinter as tk
+import tkinter as tk
 import pickle
 import numpy as np
 
@@ -73,8 +73,9 @@ class Capture:
         camera.capture(current)
         self.whole_sample += 1
         camera.close()
+        print(current)
 #        self.__extr = extract(current, self.sample_directory_extracted_e, self.sample_directory_extracted_p, self.__extracted_count)
-        self.__extr = extract(current, self.sample_directory_extracted_e, self.sample_directory_extracted_p, self.__extracted_count)
+        self.__extr = extract_grains(current, self.sample_directory_extracted_e, self.sample_directory_extracted_p, self.__extracted_count)
         self.__grain_list_masked.append(self.__extr[1])
         self.__grain_list_platform.append(self.__extr[2])
         self.__extracted_count += self.__extr[0]
@@ -96,7 +97,7 @@ class Capture:
     def check_src_dir(self):
         if not os.path.exists(self.DIR_SAMPLE):
             os.mkdir(self.DIR_SAMPLE, 0o777)
-            print "DIR: " + self.DIR_SAMPLE + " created"
+            print ("DIR: " + self.DIR_SAMPLE + " created")
 
     def check_sample_log(self):
         if os.path.exists(self.DIR_LOG_FILE):
@@ -113,7 +114,7 @@ class Capture:
             self.DIR_BIN_FILE = self.sample_directory + "/objects.bin"
             self.whole_sample = self.sample_id
             self.__extracted_count = 0
-            print "ID: " + self.sample_directory
+            print ("ID: " + self.sample_directory)
 
     def __create_sample_directory(self):
         if os.path.exists(self.sample_directory):
@@ -163,9 +164,9 @@ class Capture:
             
             os.mkdir(self.sample_directory_extracted_e)
             os.mkdir(self.sample_directory_extracted_p)
-            print "Created: " + self.sample_directory_extracted
-            print "Created: " + self.sample_directory_extracted_e
-            print "Created: " + self.sample_directory_extracted_p
+            print ("Created: " + self.sample_directory_extracted)
+            print ("Created: " + self.sample_directory_extracted_e)
+            print ("Created: " + self.sample_directory_extracted_p)
             return True
 
     def __update_log_file(self):

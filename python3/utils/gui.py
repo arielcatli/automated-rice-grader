@@ -33,7 +33,7 @@ class GUI:
         self.__root.mainloop()
 
     def __capture(self):
-        subprocess.call(["/usr/bin/python2.7", "/home/pi/automated-rice-grader/python2/capture.py"])
+        subprocess.call(["/usr/bin/python3.5", "/home/pi/automated-rice-grader/python2/capture.py"])
         
     def __led_on(self):
         self.__btn_LED_OFF.config(state=tk.NORMAL)

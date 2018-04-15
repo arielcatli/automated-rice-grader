@@ -66,20 +66,22 @@ def __write_images(images, sample_directory_extracted_e, sample_directory_extrac
     grain_list_platform = []
     for i,image in enumerate(images):
         if os.path.exists(sample_directory_extracted_e):
-            cv2.imwrite(sample_directory_extracted_e + "e" + str(i) + ".jpg", image)
-            grain_list_masked.append(sample_directory_extracted_e + "e" + str(i) + ".jpg")
+            if not(image.shape[0] < 10 or image.shape[1] < 10):
+                cv2.imwrite(sample_directory_extracted_e + "e" + str(i) + ".jpg", image)
+                grain_list_masked.append(sample_directory_extracted_e + "e" + str(i) + ".jpg")
         else:
             print("The directory: " + sample_directory_extracted_e + " does not exists.")
         
         if os.path.exists(sample_directory_extracted_p):
-            if image.shape[0] < 128 and image.shape[1] <64:
-                platform = np.zeros([128,64,3], np.uint8)
-                vertical_offset = int(ceil((platform.shape[0] - image.shape[0])/2))
-                horizontal_offset = int(ceil((platform.shape[1] - image.shape[1])/2))
-                platform[vertical_offset:(vertical_offset+image.shape[0]), horizontal_offset:(horizontal_offset+image.shape[1])] = image
-                
-                cv2.imwrite(sample_directory_extracted_p + "p" + str(i) + ".jpg", platform)
-                grain_list_platform.append(sample_directory_extracted_p + "p" + str(i) + ".jpg")
+            if not(image.shape[0] < 10 or image.shape[1] < 10):
+                if image.shape[0] < 128 and image.shape[1] <64:
+                    platform = np.zeros([128,64,3], np.uint8)
+                    vertical_offset = int(ceil((platform.shape[0] - image.shape[0])/2))
+                    horizontal_offset = int(ceil((platform.shape[1] - image.shape[1])/2))
+                    platform[vertical_offset:(vertical_offset+image.shape[0]), horizontal_offset:(horizontal_offset+image.shape[1])] = image
+                    
+                    cv2.imwrite(sample_directory_extracted_p + "p" + str(i) + ".jpg", platform)
+                    grain_list_platform.append(sample_directory_extracted_p + "p" + str(i) + ".jpg")
         else:
             print("The directory: " + sample_directory_extracted_p + " does not exists.")
             

@@ -1,0 +1,13 @@
+224
+/home/pi/automated-rice-grader/img-src/7/extracted/p/p4.jpg
+/home/pi/automated-rice-grader/img-src/7/extracted/p/p17.jpg
+/home/pi/automated-rice-grader/img-src/7/extracted/p/p24.jpg
+/home/pi/automated-rice-grader/img-src/7/extracted/p/p3.jpg
+/home/pi/automated-rice-grader/img-src/7/extracted/p/p10.jpg
+/home/pi/automated-rice-grader/img-src/7/extracted/p/p16.jpg
+/home/pi/automated-rice-grader/img-src/7/extracted/p/p28.jpg
+/home/pi/automated-rice-grader/img-src/7/extracted/p/p14.jpg
+/home/pi/automated-rice-grader/img-src/7/extracted/p/p18.jpg
+/home/pi/automated-rice-grader/img-src/7/extracted/p/p3.jpg
+/home/pi/automated-rice-grader/img-src/7/extracted/p/p8.jpg
+/home/pi/automated-rice-grader/img-src/7/extracted/p/p20.jpg
