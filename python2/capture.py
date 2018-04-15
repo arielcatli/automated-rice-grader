@@ -2,6 +2,7 @@ from picamera import PiCamera
 import cv2
 import os
 from extraction import extract
+from extract_grains import extract_grains
 import Tkinter as tk
 import pickle
 import numpy as np
@@ -72,6 +73,7 @@ class Capture:
         camera.capture(current)
         self.whole_sample += 1
         camera.close()
+#        self.__extr = extract(current, self.sample_directory_extracted_e, self.sample_directory_extracted_p, self.__extracted_count)
         self.__extr = extract(current, self.sample_directory_extracted_e, self.sample_directory_extracted_p, self.__extracted_count)
         self.__grain_list_masked.append(self.__extr[1])
         self.__grain_list_platform.append(self.__extr[2])
