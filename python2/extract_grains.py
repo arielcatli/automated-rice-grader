@@ -68,9 +68,9 @@ def __write_images(images, sample_directory_extracted_e, sample_directory_extrac
     for i,image in enumerate(images):
         if os.path.exists(sample_directory_extracted_e):
             if not(image.shape[0] < 10 or image.shape[1] < 10):
-                cv2.imwrite(sample_directory_extracted_e + "e" + str(i) + ".jpg", image)
-                grain_list_masked.append(sample_directory_extracted_e + "e" + str(i) + ".jpg")
-                print("Writing: " + sample_directory_extracted_p + "e" + str(i) + ".jpg")
+                cv2.imwrite(sample_directory_extracted_e + "e" + str(i+start) + ".jpg", image)
+                grain_list_masked.append(sample_directory_extracted_e + "e" + str(i+start) + ".jpg")
+                print("Writing: " + sample_directory_extracted_p + "e" + str(i+start) + ".jpg")
                 if os.path.exists(sample_directory_extracted_p):
                     if not(image.shape[0] < 10 or image.shape[1] < 10):
                         if image.shape[0] < 128 and image.shape[1] <64:
@@ -79,9 +79,9 @@ def __write_images(images, sample_directory_extracted_e, sample_directory_extrac
                             horizontal_offset = int(ceil((platform.shape[1] - image.shape[1])/2))
                             platform[vertical_offset:(vertical_offset+image.shape[0]), horizontal_offset:(horizontal_offset+image.shape[1])] = image
                             
-                            cv2.imwrite(sample_directory_extracted_p + "p" + str(i) + ".jpg", platform)
-                            print("Writing: " + sample_directory_extracted_p + "p" + str(i) + ".jpg")
-                            grain_list_platform.append(sample_directory_extracted_p + "p" + str(i) + ".jpg")
+                            cv2.imwrite(sample_directory_extracted_p + "p" + str(i+start) + ".jpg", platform)
+                            print("Writing: " + sample_directory_extracted_p + "p" + str(i+start) + ".jpg")
+                            grain_list_platform.append(sample_directory_extracted_p + "p" + str(i+start) + ".jpg")
                             count += 1
                 else:
                     print("The directory: " + sample_directory_extracted_p + " does not exists.")
